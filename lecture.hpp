@@ -2,7 +2,6 @@
 #define _LECTURE_HPP_
 #include <string>
 #include "topic.hpp"
-
 /*****************************************************************************/
 
 class Topic;
@@ -35,7 +34,7 @@ private:
 
     std::string m_lectureTitle;
     std::string m_teachersName;
-    Topic m_mainTopic;
+    Topic  m_mainTopic;
 };
 
 

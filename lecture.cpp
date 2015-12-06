@@ -1,7 +1,7 @@
 #include "lecture.hpp"
 #include "messages.hpp"
 
-Lecture::Lecture(std::string const & _lectureTitle, std::string const & _teachersName,
+Lecture::Lecture(std::string const & _teachersName, std::string const & _lectureTitle,
                  std::string const & _topicName, int _numberOfSlides)
         : m_mainTopic(_topicName, _numberOfSlides)
 {

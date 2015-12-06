@@ -20,15 +20,17 @@ void Controller::createLecture(
         std::string const & _mainTopicName
 )
 {
+    /* проверял инвариант тут, не работает.
     if (_instructorName == "")
         throw Messages::InstructorNameEmpty;
     if (_disciplineName == "")
         throw Messages::DisciplineNameEmpty;
     if (_mainTopicName == "")
-        throw Messages::TopicNameEmpty;
+        throw Messages::TopicNameEmpty; 
+        */
     if (findByName(_mainTopicName) != -1 )
         throw Messages::MainTopicDuplication;
-    Lecture *_newLecture = new Lecture(_disciplineName, _instructorName, _mainTopicName);
+    Lecture *_newLecture = new Lecture(_instructorName, _disciplineName, _mainTopicName);
     //m_lectures.push_back(new Lecture (_disciplineName, _instructorName, _mainTopicName));
     m_lectures.push_back(_newLecture);
 }
