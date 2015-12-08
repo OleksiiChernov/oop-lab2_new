@@ -60,36 +60,33 @@ void Controller::addTopic(FullTopicName const & _parentName, std::string const &
     {
         if (m_lectures[i]->getTopicName() == _parentName[i])
         {
+	
             m_lectures[i]->addNewTopic(_newTopicName);
             newTopicCreation = false;
         }
     }
     if (newTopicCreation)
-        throw Messages::TopicUnknown;
+        throw std::logic_error (Messages::TopicUnknown);
 }
 
 
 std::vector< std::string > Controller::getSubtopicNames(FullTopicName const & _parentTopic) const
 {
     bool notFindTopic = true;
-    std::vector <std::string> namesOfSubtopics;
+    std::vector<std::string> namesOfSubtopics;
     int max = m_lectures.size();
     for (int i = 0; i < max; i++)
     {
         if (m_lectures[i]->getTopicName() == _parentTopic[i])
         {
-            int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-            for (int j = 0; j < maxJ; j++)
-            {
-                namesOfSubtopics.push_back(m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName());
-            }
+			namesOfSubtopics = m_lectures[i]->getMainTopic().getTopicsNames(m_lectures[i]->getMainTopic());
             notFindTopic = false;
             break;
         }
     }
 
     if (notFindTopic)
-        throw Messages::TopicUnknown;
+        throw std::logic_error(Messages::TopicUnknown);
 
     std::sort(namesOfSubtopics.begin(), namesOfSubtopics.end());
 
@@ -112,7 +109,7 @@ void Controller::setTopicSlidesCount(FullTopicName const & _topic, int _slidesCo
     }
 
     if (notFindTopic)
-        throw Messages::TopicUnknown;
+        throw std::logic_error (Messages::TopicUnknown);
 }
 
 
@@ -155,7 +152,7 @@ int Controller::getTopicTotalSlidesCount(FullTopicName const & _topic) const
     }
 
     if (notFindTopic)
-        throw Messages::TopicUnknown;
+        throw  std::logic_error(Messages::TopicUnknown);
 
     return m_nSlides;
 }
@@ -217,7 +214,7 @@ std::vector<std::string> Controller::detectEmptyLectures() const
 std::vector<std::string> Controller::findLecturesByKeyword(std::string const & _keyword) const
 {
     if (_keyword == "")
-        throw Messages::KeywordEmpty;
+        throw std::logic_error (Messages::KeywordEmpty);
 
     std::vector <std::string> m_lecturesName;
     int max = m_lectures.size();
@@ -242,7 +239,7 @@ std::vector<std::string> Controller::findLecturesByKeyword(std::string const & _
 int Controller::getLecturesCountForDiscipline(std::string const & _disciplineName) const
 {
     if (_disciplineName == "")
-        throw Messages::DisciplineNameEmpty;
+        throw std::logic_error (Messages::DisciplineNameEmpty);
 
     int nLections = 0;
 
@@ -261,7 +258,7 @@ int Controller::getLecturesCountForDiscipline(std::string const & _disciplineNam
 std::vector<std::string> Controller::getInstructorDisciplines(std::string const & _instructorName) const
 {
     if (_instructorName == "")
-        throw Messages::InstructorNameEmpty;
+        throw std::logic_error(Messages::InstructorNameEmpty);
     std::vector <std::string> mDisciplines;
 
     int max = m_lectures.size();
@@ -293,7 +290,7 @@ int Controller::resolveByName(std::string const & _name) const
 {
     int index = findByName(_name);
     if (index == -1)
-        throw Messages::MainTopicUnknown;
+        throw std::logic_error (Messages::MainTopicUnknown);
     return index;
 }
 

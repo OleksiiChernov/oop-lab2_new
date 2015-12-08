@@ -20,9 +20,11 @@ public:
     std::vector <Topic *> const & getTopics() const { return m_topics; }
 
     void addTopic(std::string  _topicName, int _nSlides = 0);
+	bool hasTopic(std::string _topicName);
 
     int getSubtopicsSlidesCount();
     void setNumberOfSlides(int _nSlides);
+	std::vector<std::string> getTopicsNames(Topic &_tpc);
 
 private:
 

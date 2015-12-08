@@ -1,7 +1,7 @@
 #include "topic.hpp"
 #include "messages.hpp"
 #include <stdexcept>
-
+#include <algorithm>
 
 Topic::Topic(std::string const & _topicName, int _nSlides)
         : m_topicName(_topicName), m_numberOfSlides(_nSlides)
@@ -22,8 +22,23 @@ Topic::~Topic()
 
 void Topic::addTopic(std::string _topicName, int _nSlides)
 {
-    Topic * _nTopic = new Topic(_topicName, _nSlides);
-    m_topics.push_back(_nTopic);
+	if (!hasTopic(_topicName))
+	{
+		Topic * _nTopic = new Topic(_topicName, _nSlides);
+		m_topics.push_back(_nTopic);
+	}
+}
+
+bool Topic::hasTopic(std::string _topicName)
+{
+	for (Topic * _top : m_topics)
+	{
+		if (_top->getTopicName() == _topicName)
+			throw std::logic_error(Messages::SubtopicExists);
+	}
+
+	return false;
+
 }
 
 
@@ -44,4 +59,22 @@ void Topic::setNumberOfSlides(int _nSlides)
         m_numberOfSlides = _nSlides;
     else
         Messages::NegativeSlidesCount;
+}
+
+std::vector<std::string> Topic::getTopicsNames(Topic &_tpc)
+{
+	std::vector <std::string> names;
+	int max = _tpc.getTopics().size();
+
+	for (int i = 0; i < max; i++)
+	{
+		names.push_back(_tpc.getTopics()[i]->getTopicName());
+		//if (_tpc.getTopics()[i]->getTopics().size() != -1)
+		//{
+		//	for (int j = 0; j < _tpc.getTopics()[i]->getTopics().size(); j++)
+		//		names.push_back(_tpc.getTopics()[i]->getTopics()[j]->getTopicName());
+	//	}
+	}
+
+	return names;
 }
