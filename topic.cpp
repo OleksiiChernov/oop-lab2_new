@@ -7,7 +7,7 @@ Topic::Topic(std::string const & _topicName, int _nSlides)
         : m_topicName(_topicName), m_numberOfSlides(_nSlides)
 {
     if (_topicName == "")
-        throw Messages::TopicNameEmpty;
+		throw std::logic_error (Messages::TopicNameEmpty);
     if (_nSlides < 0)
         Messages::NegativeSlidesCount;
 }

@@ -4,6 +4,7 @@
 #include "lecture.hpp"
 #include "topic.hpp"
 #include <iostream>
+#include <stdexcept>
 
 Controller::Controller() {}
 
@@ -20,16 +21,16 @@ void Controller::createLecture(
         std::string const & _mainTopicName
 )
 {
-    /* проверял инвариант тут, не работает.
+	/*
     if (_instructorName == "")
         throw Messages::InstructorNameEmpty;
     if (_disciplineName == "")
         throw Messages::DisciplineNameEmpty;
     if (_mainTopicName == "")
         throw Messages::TopicNameEmpty; 
-        */
+		*/
     if (findByName(_mainTopicName) != -1 )
-        throw Messages::MainTopicDuplication;
+		throw std::logic_error (Messages::MainTopicDuplication);
     Lecture *_newLecture = new Lecture(_instructorName, _disciplineName, _mainTopicName);
     //m_lectures.push_back(new Lecture (_disciplineName, _instructorName, _mainTopicName));
     m_lectures.push_back(_newLecture);

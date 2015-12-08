@@ -1,17 +1,18 @@
 #include "lecture.hpp"
 #include "messages.hpp"
+#include <stdexcept>
 
 Lecture::Lecture(std::string const & _teachersName, std::string const & _lectureTitle,
                  std::string const & _topicName, int _numberOfSlides)
         : m_mainTopic(_topicName, _numberOfSlides)
 {
     if (_lectureTitle == "")
-        throw Messages::DisciplineNameEmpty;
+		throw std::logic_error (Messages::DisciplineNameEmpty);
     else
         m_lectureTitle = _lectureTitle;
 
     if (_teachersName == "")
-        throw Messages::InstructorNameEmpty;
+		throw std::logic_error (Messages::InstructorNameEmpty);
     else
         m_teachersName = _teachersName;
 }
