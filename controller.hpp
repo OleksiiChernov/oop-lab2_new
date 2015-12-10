@@ -67,7 +67,7 @@ public:
 
     /*-----------------------------------------------------------------*/
 
-
+	void addToSubtopic(FullTopicName const & _parentName, std::string const & _newTopicName);
 
 private:
 

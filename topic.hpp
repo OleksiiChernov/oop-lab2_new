@@ -22,9 +22,13 @@ public:
     void addTopic(std::string  _topicName, int _nSlides = 0);
 	bool hasTopic(std::string _topicName);
 
+	typedef std::vector< std::string > FullTopicName;
+
     int getSubtopicsSlidesCount();
     void setNumberOfSlides(int _nSlides);
-	std::vector<std::string> getTopicsNames(Topic &_tpc);
+	std::vector<std::string> getTopicsNames(Topic &_tpc, FullTopicName const & _parentTopic);
+	int getTotalNumberOfSlides(Topic &_tpc, FullTopicName const & _parentTopic);
+
 
 private:
 

@@ -54,19 +54,24 @@ std::string const & Controller::getLectureDisciplineName(std::string const & _ma
 
 void Controller::addTopic(FullTopicName const & _parentName, std::string const & _newTopicName)
 {
-    bool newTopicCreation = true;
-    int max = m_lectures.size();
-    for (int i = 0; i < max; i++)
-    {
-        if (m_lectures[i]->getTopicName() == _parentName[i])
-        {
-	
-            m_lectures[i]->addNewTopic(_newTopicName);
-            newTopicCreation = false;
-        }
-    }
-    if (newTopicCreation)
-        throw std::logic_error (Messages::TopicUnknown);
+	if (_parentName.size() > 1)
+		addToSubtopic(_parentName, _newTopicName);
+	else
+	{
+		bool newTopicCreation = true;
+		int max = m_lectures.size();
+		for (int i = 0; i < max; i++)
+		{
+			if (m_lectures[i]->getTopicName() == _parentName[0])
+			{
+
+				m_lectures[i]->addNewTopic(_newTopicName);
+				newTopicCreation = false;
+			}
+		}
+		if (newTopicCreation)
+			throw std::logic_error(Messages::TopicUnknown);
+	}
 }
 
 
@@ -77,12 +82,15 @@ std::vector< std::string > Controller::getSubtopicNames(FullTopicName const & _p
     int max = m_lectures.size();
     for (int i = 0; i < max; i++)
     {
-        if (m_lectures[i]->getTopicName() == _parentTopic[i])
-        {
-			namesOfSubtopics = m_lectures[i]->getMainTopic().getTopicsNames(m_lectures[i]->getMainTopic());
-            notFindTopic = false;
-            break;
-        }
+		for (int k = 0; k < _parentTopic.size(); k++)
+		{
+			if (m_lectures[i]->getTopicName() == _parentTopic[k])
+			{
+				namesOfSubtopics = m_lectures[i]->getMainTopic().getTopicsNames(m_lectures[i]->getMainTopic(), _parentTopic);
+				notFindTopic = false;
+				break;
+			}
+		}
     }
 
     if (notFindTopic)
@@ -98,15 +106,35 @@ void Controller::setTopicSlidesCount(FullTopicName const & _topic, int _slidesCo
 {
     bool notFindTopic = true;
     int max = m_lectures.size();
-    for (int i = 0; i < max; i++)
-    {
-        if (m_lectures[i]->getTopicName() == _topic[i])
-        {
-            m_lectures[i]->getMainTopic().setNumberOfSlides(_slidesCount);
-            notFindTopic = false;
-            break;
-        }
-    }
+	if (_topic.size() > 1)
+	{
+	for (int i = 0; i < max; i++)
+		if (m_lectures[i]->getTopicName() == _topic[0])
+		{
+			for (int j = 0; j < m_lectures[i]->getMainTopic().getTopics().size(); j++)
+			{
+				if (m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName() == _topic[1])
+				{
+					m_lectures[i]->getMainTopic().getTopics()[j]->setNumberOfSlides(_slidesCount);
+					notFindTopic = false;
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < max; i++)
+			for (int k = 0; k < _topic.size(); k++)
+			{
+				if (m_lectures[i]->getTopicName() == _topic[k])
+				{
+					m_lectures[i]->getMainTopic().setNumberOfSlides(_slidesCount);
+					notFindTopic = false;
+					break;
+				}
+			}
+	}
 
     if (notFindTopic)
         throw std::logic_error (Messages::TopicUnknown);
@@ -118,11 +146,12 @@ int Controller::getTopicOwnSlidesCount(FullTopicName const & _topic) const
     bool notFindTopic = true;
     int max = m_lectures.size();
     for (int i = 0; i < max; i++)
+		for (int k = 0; k < _topic.size(); k++)
     {
-        if (m_lectures[i]->getTopicName() == _topic[i])
+        if (m_lectures[i]->getTopicName() == _topic[k])
         {
             notFindTopic = false;
-            return m_lectures[i]->getMainTopic().getNumberOfSlides();
+            return m_lectures[i]->getMainTopic().getTotalNumberOfSlides(m_lectures[i]->getMainTopic(), _topic);
         }
     }
     return -1;
@@ -136,20 +165,23 @@ int Controller::getTopicTotalSlidesCount(FullTopicName const & _topic) const
 {
     bool notFindTopic = true;
     int m_nSlides = 0;
-    int max = m_lectures.size();
-    for (int i = 0; i < max; i++)
-    {
-        if (m_lectures[i]->getTopicName() == _topic[i])
-        {
-            int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-            for (int j = 0; j < maxJ; j++)
-            {
-                m_nSlides += m_lectures[i]->getMainTopic().getTopics()[j]->getNumberOfSlides();
-            }
-            notFindTopic = false;
-            break;
-        }
-    }
+	int max = m_lectures.size();
+	for (int i = 0; i < max; i++)
+	{
+		for (int k = 0; k < _topic.size(); k++)
+		{
+			if (m_lectures[i]->getTopicName() == _topic[k])
+			{
+				int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
+				for (int j = 0; j < maxJ; j++)
+				{
+					m_nSlides += m_lectures[i]->getMainTopic().getTopics()[j]->getTotalNumberOfSlides(m_lectures[i]->getMainTopic(), _topic);
+				}
+				notFindTopic = false;
+				break;
+			}
+		}
+	}
 
     if (notFindTopic)
         throw  std::logic_error(Messages::TopicUnknown);
@@ -283,6 +315,22 @@ std::vector<std::string> Controller::getInstructorDisciplines(std::string const 
 
     std::sort(mDisciplines.begin(), mDisciplines.end());
     return mDisciplines;
+}
+
+void Controller::addToSubtopic(FullTopicName const & _parentName, std::string const & _newTopicName)
+{
+	int max = m_lectures.size();
+	for (int i = 0; i < max; i++)
+	{
+		if (m_lectures[i]->getTopicName() == _parentName[0])
+		{
+			for (int j = 0; j < m_lectures[i]->getMainTopic().getTopics().size(); j++)
+			{
+				if (m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName() == _parentName[1])
+					m_lectures[i]->getMainTopic().getTopics()[j]->addTopic(_newTopicName);
+			}
+		}
+	}
 }
 
 
