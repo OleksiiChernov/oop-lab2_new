@@ -93,30 +93,88 @@ std::vector<std::string> Topic::getTopicsNames(Topic &_tpc, FullTopicName const 
 	return names;
 }
 
-int Topic::getTotalNumberOfSlides(Topic & _tpc, FullTopicName const & _parentTopic)
+int Topic::getTotalNumberOfSlides(FullTopicName const & _parentTopic)
 {
+	int numbers = 0;
+	bool notFindTopic = true;
+	/*
+	if (_parentTopic.size() > 1)
+	{
+		int max = m_topics.size();
+		int maxK = _parentTopic.size();
+		for (int i = 0; i < max; i++)
+			for (int k = 0; k < maxK; k++)
+			{
+				if (m_topicName == _parentTopic[k])
+				{
+					if (m_topics[i]->getTopicName() == _parentTopic[k])
+					{
+						notFindTopic = false;
+						int maxJ = m_topics[i]->getTopics().size();
+						for (int j = 0; j < maxJ; j++)
+							numbers += m_topics[i]->getTopics()[j]->getNumberOfSlides();
+					}
+				}
+			}
+
+	}
+		*/
+	if (_parentTopic.size() > 1)
+	{
+		if (m_topicName == _parentTopic[0])
+		{
+			for (int j = 0; j < m_topics.size(); j++)
+			{
+				if (m_topics[j]->getTopicName() == _parentTopic[1])
+				{
+						numbers += m_topics[j]->getNumberOfSlides();
+					//numbers += _tpc.getTopics()[j]->getNumberOfSlides();
+					notFindTopic = false;
+				}
+			}
+		}
+	} 
+	else
+	{
+		int max = m_topics.size();
+		numbers = getNumberOfSlides();
+		for (int i = 0; i < max; i++)
+		{
+			numbers += m_topics[i]->getNumberOfSlides();
+		}
+		notFindTopic = false;
+	}
+
+	if (notFindTopic)
+		throw  std::logic_error(Messages::TopicUnknown);
+	
+	return numbers;
+}
+
+
+int Topic::getOwnNumberOfSlides(FullTopicName const & _parentTopic)
+{
+	bool notFindTopic = true;
 	int numbers = 0;
 	if (_parentTopic.size() > 1)
 	{
-		if (_tpc.getTopicName() == _parentTopic[0])
+		if (m_topicName == _parentTopic[0])
 		{
-			for (int j = 0; j < _tpc.getTopics().size(); j++)
+			for (int j = 0; j < m_topics.size(); j++)
 			{
-				if (_tpc.getTopics()[j]->getTopicName() == _parentTopic[1])
-					for (int i = 0; i < _tpc.getTopics()[j]->getTopics().size(); i++)
-						numbers += _tpc.getTopics()[j]->getTopics()[i]->getNumberOfSlides();
+				if (m_topics[j]->getTopicName() == _parentTopic[1])
+				{
+					numbers += m_topics[j]->getNumberOfSlides();
+					//numbers += _tpc.getTopics()[j]->getNumberOfSlides();
+					notFindTopic = false;
+				}
 			}
 		}
 	}
 	else
 	{
-		int max = _tpc.getTopics().size();
-		numbers = _tpc.getNumberOfSlides();
-		for (int i = 0; i < max; i++)
-		{
-			numbers += _tpc.getTopics()[i]->getNumberOfSlides();
-		}
+		numbers = getNumberOfSlides();
 	}
-	
+
 	return numbers;
 }

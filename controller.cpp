@@ -151,7 +151,7 @@ int Controller::getTopicOwnSlidesCount(FullTopicName const & _topic) const
         if (m_lectures[i]->getTopicName() == _topic[k])
         {
             notFindTopic = false;
-            return m_lectures[i]->getMainTopic().getTotalNumberOfSlides(m_lectures[i]->getMainTopic(), _topic);
+            return m_lectures[i]->getMainTopic().getOwnNumberOfSlides(_topic);
         }
     }
     return -1;
@@ -172,11 +172,7 @@ int Controller::getTopicTotalSlidesCount(FullTopicName const & _topic) const
 		{
 			if (m_lectures[i]->getTopicName() == _topic[k])
 			{
-				int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-				for (int j = 0; j < maxJ; j++)
-				{
-					m_nSlides += m_lectures[i]->getMainTopic().getTopics()[j]->getTotalNumberOfSlides(m_lectures[i]->getMainTopic(), _topic);
-				}
+					m_nSlides += m_lectures[i]->getMainTopic().getTotalNumberOfSlides(_topic);
 				notFindTopic = false;
 				break;
 			}
@@ -195,21 +191,21 @@ std::string Controller::findLargestLecture() const
     if (m_lectures.size() == 0)
         return "";
 
+	if (m_lectures.size() == 1)
+		return m_lectures[0]->getTopicName();
+
     int m_nSlides1 = 0;
     int m_nSlides2 = 0;
-    int iteration;
+    int iteration = 0;
 
     int max = m_lectures.size();
     for (int i = 0; i < max; i++)
     {
         m_nSlides2 = 0;
-        int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-        for (int j = 0; j < maxJ; j++)
-        {
-            m_nSlides2 += m_lectures[i]->getMainTopic().getTopics()[i]->getNumberOfSlides();
-        }
+		m_nSlides2 += m_lectures[i]->getMainTopic().getNumberOfSlides();
 
-        if (m_nSlides1 < m_nSlides2)
+
+        if (m_nSlides2 > m_nSlides1)
         {
             m_nSlides1 = m_nSlides2;
             iteration = i;
@@ -226,16 +222,17 @@ std::vector<std::string> Controller::detectEmptyLectures() const
     std::vector<std::string> m_lecturesNames;
     int max = m_lectures.size();
 
+	if (m_lectures.size() == 1)
+	{
+		if (m_lectures[0]->getMainTopic().getNumberOfSlides() == 0)
+			m_lecturesNames.push_back(m_lectures[0]->getTopicName());
+		return m_lecturesNames;
+	}
+
     for (int i = 0; i < max; i++)
     {
-        int m_nSlides = 0;
-        int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-        for (int j = 0; j < maxJ; j++)
-        {
-            m_nSlides += m_lectures[i]->getMainTopic().getTopics()[j]->getNumberOfSlides();
-        }
-        if (m_nSlides == 0)
-            m_lecturesNames.push_back(m_lectures[i]->getLectureTitle());
+        if (m_lectures[i]->getMainTopic().getNumberOfSlides() == 0)
+            m_lecturesNames.push_back(m_lectures[i]->getTopicName());
     }
 
     std::sort(m_lecturesNames.begin(), m_lecturesNames.end());
@@ -253,14 +250,40 @@ std::vector<std::string> Controller::findLecturesByKeyword(std::string const & _
 
     for (int i = 0; i < max; i++)
     {
-        int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-        for (int j = 0; j < maxJ; j++)
-        {
-            std::string _str = m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName();
-            size_t pos = _str.find(_keyword);
-            if (pos != std::string::npos)
-                m_lecturesName.push_back(m_lectures[i]->getLectureTitle());
-        }
+		if (m_lectures[i]->getMainTopic().getTopics().size() == 0)
+		{
+			std::string _str = m_lectures[i]->getTopicName();
+			size_t pos = _str.find(_keyword);
+			if (pos != std::string::npos)
+				m_lecturesName.push_back(m_lectures[i]->getTopicName());
+		}
+		else if (m_lectures[i]->getMainTopic().getTopics().size() != 0)
+		{
+			int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
+			for (int j = 0; j < maxJ; j++)
+			{
+				int maxK = m_lectures[i]->getMainTopic().getTopics()[j]->getTopics().size();
+				for (int k = 0; k < maxK; k++)
+				{
+					std::string _str = m_lectures[i]->getMainTopic().getTopics()[j]->getTopics()[k]->getTopicName();
+					size_t pos = _str.find(_keyword);
+					if (pos != std::string::npos)
+						m_lecturesName.push_back(m_lectures[i]->getTopicName());
+				}
+			}
+		}
+		else 
+			{
+				int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
+				for (int j = 0; j < maxJ; j++)
+				{
+					std::string _str = m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName();
+					size_t pos = _str.find(_keyword);
+					if (pos != std::string::npos)
+						m_lecturesName.push_back(m_lectures[i]->getTopicName());
+				}
+				
+			}
     }
 
     std::sort(m_lecturesName.begin(), m_lecturesName.end());

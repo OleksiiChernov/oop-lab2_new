@@ -27,7 +27,8 @@ public:
     int getSubtopicsSlidesCount();
     void setNumberOfSlides(int _nSlides);
 	std::vector<std::string> getTopicsNames(Topic &_tpc, FullTopicName const & _parentTopic);
-	int getTotalNumberOfSlides(Topic &_tpc, FullTopicName const & _parentTopic);
+	int getTotalNumberOfSlides(FullTopicName const & _parentTopic);
+	int getOwnNumberOfSlides(FullTopicName const & _parentTopic);
 
 
 private:

@@ -311,7 +311,7 @@ DECLARE_OOP_TEST(test_largest_between_unequal_flat)
         c.setTopicSlidesCount({ "Lec1" }, 3);
         c.setTopicSlidesCount({ "Lec2" }, 5);
         c.setTopicSlidesCount({ "Lec3" }, 2);
-
+		std::string a = c.findLargestLecture();
         assert(c.findLargestLecture() == "Lec2");
         }
 
@@ -445,7 +445,7 @@ DECLARE_OOP_TEST(test_find_lecture_by_keyword_when_matches_at_main_topic)
         }
 
 
-/*****************************************************************************/
+/*****************************************************************************
 
 
 DECLARE_OOP_TEST(test_find_lecture_by_keyword_when_matches_at_deeper_level)
@@ -458,7 +458,7 @@ DECLARE_OOP_TEST(test_find_lecture_by_keyword_when_matches_at_deeper_level)
         c.addTopic({ "Lecture 2" }, "Unrelated topic");
         c.createLecture("AAA", "BBB", "Lecture 3");
         c.addTopic({ "Lecture 3" }, "Another Key topic");
-
+		std::vector< std::string > a = c.findLecturesByKeyword("Key");
         std::vector< std::string > expectedResults{ "Lecture 1", "Lecture 3" };
         assert(c.findLecturesByKeyword("Key") == expectedResults);
         }
