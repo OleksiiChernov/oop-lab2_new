@@ -250,14 +250,30 @@ std::vector<std::string> Controller::findLecturesByKeyword(std::string const & _
 
     for (int i = 0; i < max; i++)
     {
-		if (m_lectures[i]->getMainTopic().getTopics().size() == 0)
+		int sz = m_lectures[i]->getMainTopic().getTopics().size();
+		if (sz == 0)
 		{
 			std::string _str = m_lectures[i]->getTopicName();
 			size_t pos = _str.find(_keyword);
 			if (pos != std::string::npos)
 				m_lecturesName.push_back(m_lectures[i]->getTopicName());
 		}
-		else if (m_lectures[i]->getMainTopic().getTopics().size() != 0)
+		else if (sz > 0 && m_lectures[i]->getMainTopic().getTopics()[0]->getTopics().size() == 0)
+		{
+			{
+				int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
+				for (int j = 0; j < maxJ; j++)
+				{
+					std::string _str = m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName();
+					size_t pos = _str.find(_keyword);
+					if (pos != std::string::npos)
+						m_lecturesName.push_back(m_lectures[i]->getTopicName());
+				}
+
+			}
+		}
+			
+		else
 		{
 			int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
 			for (int j = 0; j < maxJ; j++)
@@ -272,18 +288,6 @@ std::vector<std::string> Controller::findLecturesByKeyword(std::string const & _
 				}
 			}
 		}
-		else 
-			{
-				int maxJ = m_lectures[i]->getMainTopic().getTopics().size();
-				for (int j = 0; j < maxJ; j++)
-				{
-					std::string _str = m_lectures[i]->getMainTopic().getTopics()[j]->getTopicName();
-					size_t pos = _str.find(_keyword);
-					if (pos != std::string::npos)
-						m_lecturesName.push_back(m_lectures[i]->getTopicName());
-				}
-				
-			}
     }
 
     std::sort(m_lecturesName.begin(), m_lecturesName.end());

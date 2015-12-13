@@ -445,7 +445,7 @@ DECLARE_OOP_TEST(test_find_lecture_by_keyword_when_matches_at_main_topic)
         }
 
 
-/*****************************************************************************
+/*****************************************************************************/
 
 
 DECLARE_OOP_TEST(test_find_lecture_by_keyword_when_matches_at_deeper_level)
